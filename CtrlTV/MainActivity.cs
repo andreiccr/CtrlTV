@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
@@ -11,6 +14,7 @@ using AndroidX.AppCompat.Widget;
 using AndroidX.Core.View;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.RecyclerView.Widget;
+using CtrlTv;
 using Google.Android.Material.FloatingActionButton;
 using Google.Android.Material.Navigation;
 using Google.Android.Material.Snackbar;
@@ -27,7 +31,7 @@ namespace CtrlTV
         DeviceListAdapter mAdapter;
         DeviceList mDeviceList;
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected async override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
@@ -55,11 +59,26 @@ namespace CtrlTV
 
             // Plug in my adapter:
             mAdapter = new DeviceListAdapter(mDeviceList);
+            mAdapter.DeviceClick += MAdapter_DeviceClick;
             mRecyclerView.SetAdapter(mAdapter);
 
             //Add divider between items
             mRecyclerView.AddItemDecoration(new DividerItemDecoration(mRecyclerView.Context, DividerItemDecoration.Vertical));
 
+            await UpdateDeviceList();
+
+        }
+
+        private void MAdapter_DeviceClick(object sender, int position)
+        {
+
+            string deviceIp = mDeviceList.Address[position];
+            string uri = "ws://" + deviceIp + ":3000";
+
+            var myIntent = new Intent(this, typeof(ControlActivity));
+            myIntent.PutExtra("DEVICE_URI", uri);
+            myIntent.PutExtra("DEVICE_CLIENT_KEY", "37802f5921bf55e93068e22d1c73778e");
+            StartActivityForResult(myIntent, 0);
         }
 
         public override void OnBackPressed()
@@ -92,13 +111,14 @@ namespace CtrlTV
             return base.OnOptionsItemSelected(item);
         }
 
-        private async void FabOnClick(object sender, EventArgs eventArgs)
+        async Task UpdateDeviceList()
         {
             //SSDP - Device Discovery
             SsdpDeviceLocator nsd = new SsdpDeviceLocator();
             var deviceList = await nsd.SearchAsync();
 
             string deviceName;
+            string pattern = @"\b\d+.\d+.\d+.\d+\b"; //IP address patern
 
             foreach (var d in deviceList)
             {
@@ -116,13 +136,21 @@ namespace CtrlTV
                 if (deviceName != "" && !mDeviceList.Name.Contains(deviceName))
                 {
                     mDeviceList.Name.Add(deviceName);
-                    mDeviceList.Address.Add(d.DescriptionLocation.ToString());
+                    mDeviceList.Uri.Add(d.DescriptionLocation.ToString());
                     mDeviceList.Usn.Add(d.Usn.ToString());
+
+                    Match m = Regex.Match(d.DescriptionLocation.ToString(), pattern, RegexOptions.IgnoreCase);
+                    mDeviceList.Address.Add(m.Groups[0].ToString());
 
                     mAdapter.NotifyDataSetChanged();
                 }
 
             }
+        }
+
+        private async void FabOnClick(object sender, EventArgs eventArgs)
+        {
+            await UpdateDeviceList();
         }
 
         public bool OnNavigationItemSelected(IMenuItem item)
@@ -169,6 +197,7 @@ namespace CtrlTV
     public class DeviceListAdapter : RecyclerView.Adapter
     {
         public DeviceList mDeviceList;
+        public event EventHandler<int> DeviceClick;
 
         public DeviceListAdapter(DeviceList deviceList)
         {
@@ -180,13 +209,18 @@ namespace CtrlTV
             get { return mDeviceList.Count; }
         }
 
+        void OnClick(int position)
+        {
+            if (DeviceClick != null)
+                DeviceClick(this, position);
+        }
+
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
             DeviceListHolder vh = holder as DeviceListHolder;
 
             vh.Caption.Text = mDeviceList.Name[position];
             vh.Address.Text = mDeviceList.Address[position];
-            vh.Usn.Text = mDeviceList.Usn[position];
         }
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
@@ -195,7 +229,7 @@ namespace CtrlTV
             View itemView = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.DeviceListView, parent, false);
 
             // Create a ViewHolder to hold view references inside the CardView:
-            DeviceListHolder vh = new DeviceListHolder(itemView);
+            DeviceListHolder vh = new DeviceListHolder(itemView, OnClick);
             return vh;
         }
 
@@ -204,13 +238,13 @@ namespace CtrlTV
         {
             public TextView Caption { get; private set; }
             public TextView Address { get; private set; }
-            public TextView Usn { get; private set; }
 
-            public DeviceListHolder(View itemView) : base(itemView)
+            public DeviceListHolder(View itemView, Action<int> listener) : base(itemView)
             {
                 Caption = itemView.FindViewById<TextView>(Resource.Id.deviceName);
                 Address = itemView.FindViewById<TextView>(Resource.Id.deviceLocation);
-                Usn = itemView.FindViewById<TextView>(Resource.Id.deviceUsn);
+
+                itemView.Click += (sender, e) => listener(base.LayoutPosition);
             }
         }
     }
@@ -219,6 +253,7 @@ namespace CtrlTV
     {
         public List<string> Name;
         public List<string> Usn;
+        public List<string> Uri;
         public List<string> Address;
 
         public int Count
@@ -230,15 +265,8 @@ namespace CtrlTV
         {
             Name = new List<string>();
             Usn = new List<string>();
+            Uri = new List<string>();
             Address = new List<string>();
-
-            /*Name.Add("DUMMY 1");
-            Usn.Add("0000:0000");
-            Address.Add("http://0.0.0.0/");
-
-            Name.Add("DUMMY 2");
-            Usn.Add("0000:0000");
-            Address.Add("http://0.0.0.0/");*/
         }
     }
 }
