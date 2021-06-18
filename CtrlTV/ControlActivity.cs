@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
@@ -19,7 +20,8 @@ namespace CtrlTV
     [Activity(Label = "ControlActivity", Theme = "@style/AppTheme.NoActionBar")]
     public class ControlActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
-        Button volumeUpBtn, volumeDownBtn, channelUpBtn, channelDownBtn;
+        Button volumeUpBtn, volumeDownBtn, channelUpBtn, channelDownBtn, channelGoBtn;
+        EditText channelNumberInput;
         TextView statusText;
 
         Lgtv lgtv;
@@ -48,6 +50,11 @@ namespace CtrlTV
             volumeDownBtn = FindViewById<Button>(Resource.Id.volumeDown);
             channelUpBtn = FindViewById<Button>(Resource.Id.channelUp);
             channelDownBtn = FindViewById<Button>(Resource.Id.channelDown);
+
+            channelNumberInput = FindViewById<EditText>(Resource.Id.channelNumberInput);
+            channelGoBtn = FindViewById<Button>(Resource.Id.channelGo);
+
+            channelGoBtn.Click += ChannelGoBtn_Click;
 
             volumeUpBtn.Click += VolumeUpBtn_Click;
             volumeDownBtn.Click += VolumeDownBtn_Click;
@@ -94,6 +101,38 @@ namespace CtrlTV
 
             });
 
+        }
+
+        private async void ChannelGoBtn_Click(object sender, EventArgs e)
+        {
+            if(channelNumberInput.Text.Length > 0)
+            {
+                try
+                {
+                    int num = int.Parse(channelNumberInput.Text);
+                    if (connectionStatus == 1)
+                    {
+                        connectionStatus = 2;
+
+                        await lgtv.SetChannel(lgtv.ChannelIdFromNumber(num), async delegate
+                        {
+                            await lgtv.GetChannel(delegate
+                            {
+                                connectionStatus = 1;
+                            });
+
+                        });
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Log.Debug("APP", "Error changing channel: " + ex.Message);
+                }
+                finally
+                {
+                    channelNumberInput.Text = "";
+                }
+            }
         }
 
         public override void OnBackPressed()

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,7 +17,8 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:id="@+id/textView1"
-        android:gravity="center" />
+        android:gravity="center"
+        />
 
     <Button
         android:text="V +"
@@ -27,7 +29,8 @@
         android:id="@+id/volumeUp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView1" />
+        android:layout_below="@+id/textView1"
+        android:layout_margin="16dp" />
 
     <Button
         android:text="CH +"
@@ -38,7 +41,8 @@
         android:id="@+id/channelUp"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/textView1"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp" />
 
     <Button
         android:text="V -"
@@ -47,7 +51,8 @@
         android:padding="16dp"
         android:textSize="18dp"
         android:id="@+id/volumeDown"
-        android:layout_below="@+id/volumeUp" />
+        android:layout_below="@+id/volumeUp"
+        android:layout_margin="16dp" />
 
     <Button
         android:text="CH -"
@@ -58,7 +63,38 @@
         android:id="@+id/channelDown"
         android:layout_below="@+id/channelUp"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp" />
+    <EditText
+        android:inputType="number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/channelNumberInput"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/channelDown"
+        android:hint="Channel Number (eg.: 42)"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp" />
+    <Button
+        android:text="Go"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/channelDown"
+        android:id="@+id/channelGo"
+        app:icon="@drawable/baseline_play_arrow_24"
+        app:iconGravity="textStart"
+        android:layout_toEndOf="@+id/channelNumberInput"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:textSize="18dp" />
 
 
 
