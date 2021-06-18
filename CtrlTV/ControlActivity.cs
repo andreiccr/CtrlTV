@@ -4,7 +4,11 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
+using AndroidX.Core.View;
+using AndroidX.DrawerLayout.Widget;
 using CtrlTv;
+using Google.Android.Material.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +16,8 @@ using System.Text;
 
 namespace CtrlTV
 {
-    [Activity(Label = "ControlActivity")]
-    public class ControlActivity : Activity
+    [Activity(Label = "ControlActivity", Theme = "@style/AppTheme.NoActionBar")]
+    public class ControlActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
         Button volumeUpBtn, volumeDownBtn, channelUpBtn, channelDownBtn;
         TextView statusText;
@@ -26,6 +30,17 @@ namespace CtrlTV
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_control);
+
+            AndroidX.AppCompat.Widget.Toolbar toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar2);
+            SetSupportActionBar(toolbar);
+
+            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
+            drawer.AddDrawerListener(toggle);
+            toggle.SyncState();
+
+            NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
+            navigationView.SetNavigationItemSelectedListener(this);
 
             statusText = FindViewById<TextView>(Resource.Id.textView1);
 
@@ -79,6 +94,53 @@ namespace CtrlTV
 
             });
 
+        }
+
+        public override void OnBackPressed()
+        {
+            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            if (drawer.IsDrawerOpen(GravityCompat.Start))
+            {
+                drawer.CloseDrawer(GravityCompat.Start);
+            }
+            else
+            {
+                base.OnBackPressed();
+            }
+        }
+
+        public bool OnNavigationItemSelected(IMenuItem item)
+        {
+            int id = item.ItemId;
+
+            if (id == Resource.Id.nav_camera)
+            {
+                // Handle the camera action
+            }
+            else if (id == Resource.Id.nav_gallery)
+            {
+
+            }
+            else if (id == Resource.Id.nav_slideshow)
+            {
+
+            }
+            else if (id == Resource.Id.nav_manage)
+            {
+
+            }
+            else if (id == Resource.Id.nav_share)
+            {
+
+            }
+            else if (id == Resource.Id.nav_send)
+            {
+
+            }
+
+            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            drawer.CloseDrawer(GravityCompat.Start);
+            return true;
         }
 
         private async void ChannelDownBtn_Click(object sender, EventArgs e)

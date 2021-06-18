@@ -1,65 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                                        xmlns:tools="http://schemas.android.com/tools"
+                                        android:id="@+id/drawer_layout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:fitsSystemWindows="true"
+                                        tools:openDrawer="start">
+
+  <include
+    layout="@layout/app_bar_control"
     android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <com.google.android.material.navigation.NavigationView
+    android:id="@+id/nav_view"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/app_bar_main"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:layout_gravity="start"
+    android:fitsSystemWindows="true"
+    app:headerLayout="@layout/nav_header_main"
+    app:menu="@menu/activity_main_drawer" />
 
-    <TextView
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:id="@+id/textView1"
-        android:gravity="center" />
-
-    <Button
-        android:text="V +"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="18dp"
-        android:id="@+id/volumeUp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView1" />
-
-    <Button
-        android:text="CH +"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="18dp"
-        android:id="@+id/channelUp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/textView1"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:text="V -"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="18dp"
-        android:id="@+id/volumeDown"
-        android:layout_below="@+id/volumeUp" />
-
-    <Button
-        android:text="CH -"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="18dp"
-        android:id="@+id/channelDown"
-        android:layout_below="@+id/channelUp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
-
-
-
-</RelativeLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
