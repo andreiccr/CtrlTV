@@ -22,7 +22,6 @@ namespace CtrlTV
     {
         Button volumeUpBtn, volumeDownBtn, channelUpBtn, channelDownBtn, channelGoBtn;
         EditText channelNumberInput;
-        TextView statusText;
 
         Lgtv lgtv;
         int connectionStatus = 0;
@@ -43,8 +42,6 @@ namespace CtrlTV
 
             NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             navigationView.SetNavigationItemSelectedListener(this);
-
-            statusText = FindViewById<TextView>(Resource.Id.textView1);
 
             volumeUpBtn = FindViewById<Button>(Resource.Id.volumeUp);
             volumeDownBtn = FindViewById<Button>(Resource.Id.volumeDown);
@@ -92,7 +89,6 @@ namespace CtrlTV
                 }
                 else
                 {
-                    statusText.Text = "Connection failed!";
                     Intent finishIntent = new Intent(this, typeof(MainActivity));
                     finishIntent.PutExtra("MESSAGE", "Failed to connect");
                     SetResult(Result.Canceled, finishIntent);
